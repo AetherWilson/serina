@@ -2,6 +2,7 @@
 
 A Python-based voice assistant that listens for the wake word "Serena", processes voice commands, and responds using AI-generated text converted to speech.
 This is a self-project and also a toy project, expect slow update.
+Feel free to suggest improvements or report bugs as I'm only a hobbyist.
 
 ## Features
 
