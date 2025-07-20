@@ -4,6 +4,11 @@ import gpt_handler
 import asyncio
 import random
 
+# todo
+# make json for settings (language, voice detect threshold, etc.)
+# make personalities for serina
+# make chat loggable
+
 def random_start_string():
     """Generate a random start string for the conversation."""
     responses = ["Yes?", "I'm here.", "How can I help?", "What's up?", "I'm listening."]
@@ -26,7 +31,7 @@ async def main():
                 print(f"Response: {response}")
                 await play_tts_immediately(response)
             else:
-                print("Please repeat, I didn't catch that.")
+                await play_tts_immediately("Please repeat, I didn't catch that.")
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -12,10 +12,10 @@ def voice_to_string():
     recognizer = sr.Recognizer()
     
     # Lower the energy threshold to make it more sensitive to quieter sounds
-    recognizer.energy_threshold = 40
-    # Set pause threshold to 1.4 seconds (how long to wait after silence before stopping)
+    recognizer.energy_threshold = 35
+    # Set pause threshold to X seconds (how long to wait after silence before stopping)
     recognizer.pause_threshold = 1.4
-
+    
     # Use the default microphone as the audio source
     with sr.Microphone() as source:
         print("Listening for voice...")
@@ -30,7 +30,7 @@ def voice_to_string():
             audio = recognizer.listen(source, timeout=10, phrase_time_limit=15)
             
             # Recognize speech using Google Speech Recognition
-            text = recognizer.recognize_whisper(audio, model="base")
+            text = recognizer.recognize_google(audio, language="english")
             
             return text
                 
