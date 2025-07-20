@@ -7,10 +7,12 @@ Feel free to suggest improvements or report bugs as I'm only a hobbyist.
 ## Features
 
 - **Wake word detection**: Listens for "Serena" to activate
-- **Speech-to-text**: Converts voice input to text using Google Speech Recognition
+- **Speech-to-text**: Converts voice input to text using OpenAI Whisper
 - **AI responses**: Uses OpenAI/DeepSeek API for intelligent responses
 - **Text-to-speech**: High-quality voice synthesis using Microsoft Edge TTS
 - **Continuous listening**: Runs in a loop for ongoing interaction
+- **Configurable settings**: Easy-to-edit JSON settings file
+- **Chat history**: Maintains conversation context with automatic pruning
 
 ## Requirements
 
@@ -48,9 +50,11 @@ Feel free to suggest improvements or report bugs as I'm only a hobbyist.
    ```
 
 2. Wait for the program to start listening
-3. Say "Serena" to activate the assistant
+3. Say "Serena" to activate the assistant (**Tip**: Say it twice for better detection)
 4. When you hear "Yes?", speak your question or command
 5. The assistant will process your input and respond with speech
+
+**Note**: Due to current wake word detection limitations, you may need to say "Serena" twice for reliable activation. See the Debug section for more details and potential improvements.
 
 ## Project Structure
 
@@ -60,6 +64,10 @@ serina/
 ├── recorder.py          # Speech recognition and wake word detection
 ├── speaker.py           # Text-to-speech using Edge TTS
 ├── gpt_handler.py       # OpenAI API integration
+├── json_handle.py       # Settings and chat history management
+├── txt_handle.py        # Text file utilities
+├── settings.json        # Configuration settings
+├── chat_history.json    # Conversation history (auto-generated)
 ├── requirements.txt     # Python dependencies
 ├── .env.example         # Environment variables template
 ├── .env                 # Environment variables (API keys) - DO NOT COMMIT
@@ -93,35 +101,116 @@ Handles communication with OpenAI/DeepSeek API:
 - Manages conversation context
 - Returns AI-generated responses
 
+### `json_handle.py`
+Manages settings and chat history:
+- Loads configuration from `settings.json`
+- Saves and manages chat history with automatic pruning
+- Provides universal functions for reading/writing settings
+
+### `txt_handle.py`
+Text file utilities for reading text files safely.
+
 ## Configuration
 
-### Voice Settings
-You can customize the voice in `speaker.py`:
-```python
-# Available voices:
-# en-US-AriaNeural (default)
-# en-US-JennyNeural  
-# en-US-MichelleNeural
-await play_tts_immediately(text, voice="en-US-JennyNeural")
+Serina uses a `settings.json` file for easy configuration. Edit this file to customize your experience:
+
+```json
+{
+  "serina_language": "auto",
+  "serina_voice_model": "en-US-AriaNeural", 
+  "microphone_threshold": 80,
+  "pause_threshold": 1
+}
 ```
 
-### Speech Recognition Settings
-Adjust sensitivity in `recorder.py`:
-```python
-recognizer.energy_threshold = 40    # Lower = more sensitive
-recognizer.pause_threshold = 1.4    # Silence duration before stopping
+### Settings Explained
+
+- **`serina_language`**: Speech recognition language
+  - `"en"` - English only
+  - `"zh"` - Chinese only  
+  - `"auto"` - Auto-detect language
+  
+- **`serina_voice_model`**: Text-to-speech voice
+  - `"en-US-AriaNeural"` - Female English (default)
+  - `"en-US-JennyNeural"` - Female English (alternative)
+  - `"en-US-MichelleNeural"` - Female English (alternative)
+  - `"zh-CN-XiaoxiaoNeural"` - Female Chinese
+  
+- **`microphone_threshold`**: Microphone sensitivity (20-100)
+  - Lower values = more sensitive
+  - Higher values = less sensitive
+  
+- **`pause_threshold`**: Silence duration before stopping recording (seconds)
+  - Lower values = faster response
+  - Higher values = more patient listening
+
+## Debug
+
+### Microphone Threshold Issues
+
+The `microphone_threshold` setting in `settings.json` controls how sensitive the microphone is to sound:
+
+**Problem: Serina keeps saying "Serena not detected. Listening for voice..." repeatedly**
+- **Solution**: Turn UP the `microphone_threshold` value in `settings.json`
+- Try increasing from 80 to 100, 120, or higher
+- This makes the microphone less sensitive to background noise
+
+**Problem: Console doesn't show anything after you speak (no response within 2 seconds)**
+- **Solution**: Turn DOWN the `microphone_threshold` value in `settings.json`
+- Try decreasing from 80 to 60, 40, or lower  
+- This makes the microphone more sensitive to your voice
+
+**Example adjustments in `settings.json`:**
+```json
+{
+  "microphone_threshold": 40,    // More sensitive (use if not detecting voice)
+  "microphone_threshold": 120    // Less sensitive (use if too much background noise)
+}
 ```
 
-### AI Model Settings
-Change the AI model in `main.py`:
-```python
-response = gpt_handler.completion_response(
-    model="deepseek-v3-250324",  # or "gpt-3.5-turbo", "gpt-4", etc.
-    system_prompt="You are a helpful assistant.",
-    user_prompt=recognized_text,
-    temperature=1.0
-)
-```
+### Testing Your Settings
+
+1. Edit `settings.json` and save the file
+2. Restart the program: `python main.py`
+3. Say "Serena" and observe the console output
+4. Adjust the threshold based on the behavior described above
+
+### Wake Word Detection Issues
+
+**Current Limitation**: The wake word detection is not very reliable due to short timeout periods and sensitivity issues.
+
+**Workaround**: **Say "Serena" twice** for better detection:
+- First "Serena" - gets the system's attention
+- Second "Serena" - usually gets detected and activates the assistant
+
+**Why this happens**:
+- Wake word detection uses a 1-second timeout for quick response
+- Short timeout makes it miss longer or slower speech
+- Background noise can interfere with detection
+
+**Potential Improvements** (for developers):
+
+1. **Increase wake word timeout**:
+   ```python
+   # In recorder.py, listen_for_serena() function
+   text = voice_to_string(selected_language="en", recognizer=recognizer, timeout=3)  # Increase from 1 to 3
+   ```
+
+2. **Add multiple wake word variations**:
+   ```python
+   # Check for multiple variations
+   wake_words = ['serena', 'sarina', 'serina', 'sirena']
+   if text and any(word in text.lower() for word in wake_words):
+   ```
+
+3. **Implement continuous listening with voice activity detection**:
+   - Use a more sophisticated voice activity detection system
+   - Implement rolling buffer for continuous audio processing
+   - Add confidence scoring for wake word detection
+
+4. **Use dedicated wake word detection library**:
+   - Consider libraries like `porcupine` or `snowboy` for better wake word detection
+   - These are specifically designed for wake word detection vs general speech recognition
 
 ## Troubleshooting
 

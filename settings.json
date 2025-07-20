@@ -1,6 +1,6 @@
 {
   "serina_language": "auto",
   "serina_voice_model": "en-US-AriaNeural",
-  "microphone_threshold": 50,
+  "microphone_threshold": 80,
   "pause_threshold": 1
 }

@@ -124,7 +124,7 @@ def read_chat_history(file_path="chat_history.json"):
                 messages = json.load(f)
             return messages
         else:
-            print(f"Chat history file {file_path} not found.")
+            print(f"Chat history file {file_path} not found. Making one.")
             return []
 
     except Exception as e:

@@ -13,7 +13,7 @@ import speech_recognition as sr
 
 def random_start_string():
     """Generate a random start string for the conversation."""
-    responses = ["Yes?", "I'm here.", "How can I help?", "What's up?", "I'm listening."]
+    responses = ["Yes?", "I'm here.", "What's up?", "I'm listening."]
     return random.choice(responses)
 
 async def main():
@@ -29,7 +29,7 @@ async def main():
             voice_model = read_settings('serina_voice_model') or "en-US-AriaNeural"
             await play_tts_immediately(random_start_string(), voice=voice_model)
             
-            recognized_text = voice_to_string()  # Uses language from settings
+            recognized_text = voice_to_string(recognizer=recognizer)  # Uses language from settings
             if recognized_text:
                 print(f"Recognized: {recognized_text}")
                 await play_tts_immediately(f"I heard you said: {recognized_text}, let me think.", voice=voice_model)

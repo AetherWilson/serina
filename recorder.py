@@ -2,7 +2,7 @@ import speech_recognition as sr
 import time
 from json_handle import read_settings
 
-def voice_to_string(selected_language=None, recognizer=None):
+def voice_to_string(selected_language=None, recognizer=None, timeout=10):
     """
     Records human voice until silence is detected and converts it to a string.
     
@@ -36,7 +36,7 @@ def voice_to_string(selected_language=None, recognizer=None):
             # Listen for audio with a timeout and phrase time limit
             # timeout: how long to wait for speech to start
             # phrase_time_limit: maximum time to record after speech starts (increased to 15 seconds)
-            audio = recognizer.listen(source, timeout=10, phrase_time_limit=15)
+            audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=15)
             
             # Recognize speech using Whisper with selected language
             if selected_language == "en":
@@ -70,7 +70,7 @@ def listen_for_serena(recognizer=None):
         bool: True if 'serena' is detected in the speech, False otherwise
     """
     # Always use English for wake word detection
-    text = voice_to_string(selected_language="en", recognizer=recognizer)
+    text = voice_to_string(selected_language="en", recognizer=recognizer, timeout=1)
     if text and 'serena' in text.lower():
         print("Serena detected!")
         return True
