@@ -1,20 +1,28 @@
 import speech_recognition as sr
 import time
+from json_handle import read_settings
 
-def voice_to_string():
+def voice_to_string(selected_language=None):
     """
     Records human voice until silence is detected and converts it to a string.
+    
+    Args:
+        selected_language (str): Language to use for recognition. If None, uses setting from JSON. 
+                                Defaults to "en" if no setting found.
     
     Returns:
         str: The recognized speech as text, or None if no speech was detected/recognized
     """
+    # Get language from parameter or settings
+    if selected_language is None:
+        selected_language = read_settings('serina_language') or "en"
+    
     # Initialize the recognizer
     recognizer = sr.Recognizer()
     
-    # Lower the energy threshold to make it more sensitive to quieter sounds
-    recognizer.energy_threshold = 40
-    # Set pause threshold to 1.4 seconds (how long to wait after silence before stopping)
-    recognizer.pause_threshold = 1.4
+    # Get settings from JSON
+    recognizer.energy_threshold = read_settings('microphone_threshold') or 40
+    recognizer.pause_threshold = read_settings('pause_threshold') or 1.4
 
     # Use the default microphone as the audio source
     with sr.Microphone() as source:
@@ -29,8 +37,16 @@ def voice_to_string():
             # phrase_time_limit: maximum time to record after speech starts (increased to 15 seconds)
             audio = recognizer.listen(source, timeout=10, phrase_time_limit=15)
             
-            # Recognize speech using Google Speech Recognition
-            text = recognizer.recognize_whisper(audio, model="base")
+            # Recognize speech using Whisper with selected language
+            if selected_language == "en":
+                text = recognizer.recognize_whisper(audio, model="base", language="english")
+            elif selected_language == "zh":
+                text = recognizer.recognize_whisper(audio, model="base", language="chinese")
+            elif selected_language == "auto":
+                text = recognizer.recognize_whisper(audio, model="base")  # Auto-detect
+            else:
+                # Default to English for unknown languages
+                text = recognizer.recognize_whisper(audio, model="base", language="english")
             
             return text
                 
@@ -47,12 +63,13 @@ def voice_to_string():
 def listen_for_serena():
     """
     Listens for human voice, records it, and detects if 'serena' was said.
+    Always uses English for wake word detection.
     
     Returns:
         bool: True if 'serena' is detected in the speech, False otherwise
     """
-
-    text = voice_to_string()
+    # Always use English for wake word detection
+    text = voice_to_string(selected_language="en")
     if text and 'serena' in text.lower():
         print("Serena detected!")
         return True

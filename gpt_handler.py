@@ -41,7 +41,13 @@ def completion_response(model, system_prompt, user_prompt, chat_history = None, 
     
     # If chat history is provided, append it to the messages
     if chat_history:
-        for message in chat_history:
+        if isinstance(chat_history, list):
+            # If chat_history is a list of message dictionaries
+            for message in chat_history:
+                if isinstance(message, dict) and "role" in message and "content" in message:
+                    messages.append({"role": message["role"], "content": message["content"]})
+        elif isinstance(chat_history, dict):
+            # If chat_history is a dictionary with role:content pairs
             for role, content in chat_history.items():
                 messages.append({"role": role, "content": content})
 
