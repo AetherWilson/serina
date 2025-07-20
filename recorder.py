@@ -2,12 +2,13 @@ import speech_recognition as sr
 import time
 from json_handle import read_settings
 
-def voice_to_string(selected_language=None):
+def voice_to_string(selected_language=None, recognizer=None):
     """
     Records human voice until silence is detected and converts it to a string.
     
     Args:
-        selected_language (str): Language to use for recognition. If None, uses setting from JSON. 
+        selected_language (str): Language to use for recognition. If None, uses setting from JSON.
+        recognizer (sr.Recognizer): The speech recognizer instance to use. If None, a new instance will be created.
                                 Defaults to "en" if no setting found.
     
     Returns:
@@ -18,7 +19,10 @@ def voice_to_string(selected_language=None):
         selected_language = read_settings('serina_language') or "en"
     
     # Initialize the recognizer
-    recognizer = sr.Recognizer()
+    if recognizer is None:
+        recognizer = sr.Recognizer()
+        with sr.Microphone() as source:
+            recognizer.adjust_for_ambient_noise(source, duration=2)
     
     # Get settings from JSON
     recognizer.energy_threshold = read_settings('microphone_threshold') or 40
@@ -27,9 +31,6 @@ def voice_to_string(selected_language=None):
     # Use the default microphone as the audio source
     with sr.Microphone() as source:
         print("Listening for voice...")
-        
-        # Adjust for ambient noise
-        recognizer.adjust_for_ambient_noise(source, duration=2)
         
         try:
             # Listen for audio with a timeout and phrase time limit
@@ -60,7 +61,7 @@ def voice_to_string(selected_language=None):
             print(f"Error with speech recognition service: {e}")
             return None
 
-def listen_for_serena():
+def listen_for_serena(recognizer=None):
     """
     Listens for human voice, records it, and detects if 'serena' was said.
     Always uses English for wake word detection.
@@ -69,7 +70,7 @@ def listen_for_serena():
         bool: True if 'serena' is detected in the speech, False otherwise
     """
     # Always use English for wake word detection
-    text = voice_to_string(selected_language="en")
+    text = voice_to_string(selected_language="en", recognizer=recognizer)
     if text and 'serena' in text.lower():
         print("Serena detected!")
         return True

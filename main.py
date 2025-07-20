@@ -5,6 +5,7 @@ import asyncio
 import random
 from json_handle import read_settings, write_chat_history, read_chat_history
 from txt_handle import read_txt_file
+import speech_recognition as sr
 
 # todo
 # make personalities for serina
@@ -16,6 +17,11 @@ def random_start_string():
     return random.choice(responses)
 
 async def main():
+    recognizer = sr.Recognizer()
+    print("adjusting for ambient noise...")
+    with sr.Microphone() as source:
+        recognizer.adjust_for_ambient_noise(source, duration=5)
+    print("Ready to listen for 'Serina'...")
     while True:
         serina_heard = listen_for_serena()
         if serina_heard:
