@@ -102,6 +102,55 @@ async def play_tts_openai_async(text, voice="nova", model="tts-1", speed=1.0, in
         print(f"❌ Error in async OpenAI TTS playback: {e}")
         return False
 
+def save_tts_to_mp3(text, filename, voice="nova", model="tts-1", speed=1.0, instructions=None):
+    """
+    Convert text to speech and save as MP3 file in organized folder structure.
+    
+    Args:
+        text (str): The text to convert to speech
+        filename (str): Name of the audio file (without extension)
+        voice (str): Voice to use. Options: alloy, echo, fable, onyx, nova, shimmer
+        model (str): TTS model to use. Options: tts-1, tts-1-hd
+        speed (float): Speech speed (0.25 to 4.0)
+        instructions (str): Optional instructions for the voice tone/style
+    
+    Returns:
+        str: Full path to the saved MP3 file if successful, None if failed
+    """
+    try:
+        # Create directory structure: pre-recorded-audio/{voice}/
+        base_dir = "pre-recorded-audio"
+        voice_dir = os.path.join(base_dir, voice)
+        os.makedirs(voice_dir, exist_ok=True)
+        
+        # Generate speech using OpenAI TTS API
+        response = openai_client.audio.speech.create(
+            model=model,
+            voice=voice,
+            input=text,
+            speed=speed,
+            instructions=instructions,
+            response_format="mp3"  # Explicitly request MP3 format
+        )
+        
+        # Create full file path
+        mp3_filename = f"{filename}.mp3" if not filename.endswith('.mp3') else filename
+        file_path = os.path.join(voice_dir, mp3_filename)
+        
+        # Save the audio data to MP3 file
+        with open(file_path, 'wb') as audio_file:
+            audio_file.write(response.content)
+        
+        print(f"✓ Successfully saved MP3: '{file_path}'")
+        print(f"  Text: '{text[:50]}{'...' if len(text) > 50 else ''}'")
+        print(f"  Voice: {voice} | Model: {model} | Speed: {speed}")
+        
+        return file_path
+        
+    except Exception as e:
+        print(f"❌ Error saving TTS to MP3: {e}")
+        return None
+
 def test_voices():
     """
     Test all available OpenAI TTS voices.
@@ -151,6 +200,7 @@ if __name__ == "__main__":
     print("✓ Direct memory playback")
     print("✓ Multiple voice options")
     print("✓ Async support")
+    print("✓ MP3 file saving with organized folders")
     print()
     
     # Display voice information
@@ -167,9 +217,10 @@ if __name__ == "__main__":
             print("1. Test single voice")
             print("2. Test all voices")
             print("3. Custom text with voice selection")
-            print("4. Exit")
+            print("4. Save text to MP3 file")
+            print("5. Exit")
             
-            choice = input("\nEnter choice (1-4): ").strip()
+            choice = input("\nEnter choice (1-5): ").strip()
             
             if choice == "1":
                 text = input("Enter text to speak: ")
@@ -181,11 +232,12 @@ if __name__ == "__main__":
                 
             elif choice == "3":
                 text = input("Enter text to speak: ")
+                instructions = input("Enter any additional instructions (optional): ").strip() or None
                 print("Available voices: alloy, echo, fable, onyx, nova, shimmer")
                 voice = input("Enter voice [nova]: ").strip() or "nova"
                 model = input("Enter model (tts-1/tts-1-hd/gpt-4o-mini-tts) [tts-1]: ").strip() or "tts-1"
                 speed = input("Enter speed (0.25-4.0) [1.0]: ").strip() or "1.0"
-                instructions = input("Enter any additional instructions (optional): ").strip() or None
+
                 
                 try:
                     speed = float(speed)
@@ -195,6 +247,25 @@ if __name__ == "__main__":
                     play_tts_openai(text, voice=voice, model=model)
                     
             elif choice == "4":
+                text = input("Enter text to convert to MP3: ")
+                instructions = input("Enter any additional instructions (optional): ").strip() or None
+                filename = input("Enter filename (without extension): ")
+                print("Available voices: alloy, echo, fable, onyx, nova, shimmer")
+                voice = input("Enter voice [nova]: ").strip() or "nova"
+                model = input("Enter model (tts-1/tts-1-hd) [tts-1]: ").strip() or "tts-1"
+                speed = input("Enter speed (0.25-4.0) [1.0]: ").strip() or "1.0"
+                
+                try:
+                    speed = float(speed)
+                    saved_path = save_tts_to_mp3(text, filename, voice=voice, model=model, speed=speed, instructions=instructions)
+                    if saved_path:
+                        print(f"🎵 MP3 saved successfully!")
+                        print(f"📁 Location: {saved_path}")
+                except ValueError:
+                    print("Invalid speed value, using 1.0")
+                    save_tts_to_mp3(text, filename, voice=voice, model=model, instructions=instructions)
+                    
+            elif choice == "5":
                 print("Goodbye!")
                 break
                 

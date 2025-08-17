@@ -1,18 +1,41 @@
 # Serina - Voice Assistant
 
-A Python-based voice assistant that listens for the wake word "Serena", processes voice commands, and responds using AI-generated text converted to speech.
-This is a self-project and also a toy project, expect slow update.
+A Python-based voice assistant that listens for the wake word "Serina", processes voice commands, and responds using AI-generated text converted to speech. Features professional console interface, OpenAI TTS integration, and pre-recorded audio support.
+
+This is a self-project and also a toy project, expect slow updates.
 Feel free to suggest improvements or report bugs as I'm only a hobbyist.
 
-## Features
+## ✨ Features
 
-- **Wake word detection**: Listens for "Serena" to activate
-- **Speech-to-text**: Converts voice input to text using OpenAI Whisper
-- **AI responses**: Uses OpenAI/DeepSeek API for intelligent responses
-- **Text-to-speech**: High-quality voice synthesis using Microsoft Edge TTS
-- **Continuous listening**: Runs in a loop for ongoing interaction
-- **Configurable settings**: Easy-to-edit JSON settings file
-- **Chat history**: Maintains conversation context with automatic pruning
+- **🎯 Wake word detection**: Listens for "Serina" to activate
+- **🎤 Speech-to-text**: Converts voice input to text using OpenAI Whisper
+- **🤖 AI responses**: Uses OpenAI/DeepSeek API for intelligent responses
+- **🎵 TTS**: OpenAI TTS-1 API with multiple voice options (nova, alloy, echo, fable, onyx, shimmer)
+- **📁 Pre-recorded audio**: Instant responses using pre-recorded audio files with smart folder organization
+- **🔄 Continuous listening**: Runs in a loop for ongoing interaction
+- **⚙️ Configurable settings**: Easy-to-edit JSON settings file
+- **💬 Chat history**: Maintains conversation context with automatic pruning
+- **🎨 Professional UI**: Clean console interface with timestamps and status indicators
+- **🔀 Redirect URL support**: Custom API endpoints for proxy/redirect configurations
+- **💾 MP3 export**: Save TTS to organized MP3 files for reuse
+
+## 🆕 What's New
+
+**Major Updates:**
+- ✅ **OpenAI TTS Integration**: Replaced Edge TTS with OpenAI TTS-1 for better quality
+- ✅ **Pre-recorded Audio Support**: Instant responses using pre-recorded MP3 files
+- ✅ **Professional Console UI**: Clean interface with timestamps and status indicators
+- ✅ **MP3 Export Feature**: Save any text as MP3 files with organized folder structure
+- ✅ **Redirect URL Support**: Use custom API endpoints and proxies
+- ✅ **Multiple Voice Options**: 6 different OpenAI voices to choose from
+- ✅ **Async Architecture**: Non-blocking audio playback and processing
+- ✅ **Enhanced Error Handling**: Graceful startup/shutdown and better error messages
+
+**Technical Improvements:**
+- Cleaner code organization with `speaker_api.py`
+- Environment variable standardization (`gpt_api_key` format)
+- Pygame message suppression for cleaner output
+- Smart fallback systems for audio playback
 
 ## Requirements
 
@@ -38,81 +61,126 @@ Feel free to suggest improvements or report bugs as I'm only a hobbyist.
    - Copy `.env.example` to `.env`
    - Edit `.env` and add your API keys:
      ```
-     GPT_API_KEY=your_openai_api_key_here
-     GPT_REDIRECT_URL=your_custom_endpoint_url_or_leave_empty
+     gpt_api_key=your_openai_api_key_here
+     gpt_redirect_url=your_custom_endpoint_url_or_leave_empty
      ```
 
-## Usage
+5. Create pre-recorded audio folder structure (optional):
+   ```bash
+   mkdir -p pre-recorded-audio/nova
+   ```
+
+## 🚀 Usage
 
 1. Run the main program:
    ```bash
    python main.py
    ```
 
-2. Wait for the program to start listening
-3. Say "Serena" to activate the assistant (**Tip**: Say it twice for better detection)
-4. When you hear "Yes?", speak your question or command
+2. You'll see a professional interface like this:
+   ```
+   ============================================================
+   🤖 SERINA - AI Voice Assistant
+   ============================================================
+   📅 Started: 2025-01-17 14:30:45
+   🎯 Wake word: 'Serina'
+   🎤 Ready to listen...
+   ============================================================
+   
+   [14:30:45] ℹ️ Initializing wake word detector...
+   [14:30:46] 👂 Listening for wake word 'Serina'...
+   ```
+
+3. Say "Serina" to activate the assistant
+4. When you hear a pre-recorded response or see status updates, speak your question or command
 5. The assistant will process your input and respond with speech
 
-**Note**: Due to current wake word detection limitations, you may need to say "Serena" twice for reliable activation. See the Debug section for more details and potential improvements.
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 serina/
-├── main.py              # Main application entry point
-├── recorder.py          # Speech recognition and wake word detection
-├── speaker.py           # Text-to-speech using Edge TTS
-├── gpt_handler.py       # OpenAI API integration
-├── json_handle.py       # Settings and chat history management
-├── txt_handle.py        # Text file utilities
-├── settings.json        # Configuration settings
-├── chat_history.json    # Conversation history (auto-generated)
-├── requirements.txt     # Python dependencies
-├── .env.example         # Environment variables template
-├── .env                 # Environment variables (API keys) - DO NOT COMMIT
-├── .gitignore          # Git ignore file
-└── README.md           # This file
+├── main.py                    # Main application with professional console UI
+├── recorder.py                # Advanced speech recognition and wake word detection
+├── speaker_api.py             # OpenAI TTS integration with MP3 export capabilities
+├── speaker.py                 # Legacy Edge TTS (still available)
+├── gpt_handler.py             # OpenAI/DeepSeek API integration with redirect support
+├── json_handle.py             # Settings and chat history management
+├── txt_handle.py              # Text file utilities
+├── personality.txt            # AI personality configuration
+├── settings.json              # Configuration settings
+├── chat_history.json          # Conversation history (auto-generated)
+├── pre-recorded-audio/        # Organized audio file storage
+│   ├── nova/                  # Pre-recorded responses for nova voice
+│   ├── alloy/                 # Pre-recorded responses for alloy voice
+│   └── [other-voices]/        # Additional voice folders
+├── requirements.txt           # Python dependencies
+├── .env.example               # Environment variables template
+├── .env                       # Environment variables (API keys) - DO NOT COMMIT
+├── .gitignore                # Git ignore file
+└── README.md                 # This file
 ```
 
-## File Descriptions
+## 📋 File Descriptions
 
 ### `main.py`
-The main application loop that:
-- Listens for the wake word "Serena"
-- Activates voice recording when detected
-- Sends recognized text to AI for processing
-- Converts AI response back to speech
+The main application with professional console interface:
+- Clean timestamped status messages with emojis
+- Listens for the wake word "Serina" 
+- Uses pre-recorded audio for instant responses
+- Graceful startup/shutdown with professional headers
+- Integrated error handling and status tracking
+
+### `speaker_api.py` ⭐ **NEW**
+OpenAI TTS integration:
+- **Multiple voice options**: nova, alloy, echo, fable, onyx, shimmer
+- **TTS-1 model**: High-quality OpenAI text-to-speech
+- **MP3 export**: Save responses to organized folder structure
+- **Redirect URL support**: Custom API endpoints
+- **Async support**: Non-blocking audio playback
+- **Interactive testing**: Built-in voice testing interface
 
 ### `recorder.py`
-Contains two main functions:
-- `listen_for_serena()`: Detects the wake word "Serena"
-- `voice_to_string()`: Records and transcribes voice input
+Speech recognition and wake word detection:
+- Optimized wake word detection for "Serina"
+- Multiple fallback recognition methods
+- Advanced microphone calibration
+- Voice activity detection
 
 ### `speaker.py`
-Text-to-speech functionality using Microsoft Edge TTS:
+Legacy Microsoft Edge TTS (still available):
 - High-quality neural voices
-- Supports multiple voice options (Jenny, Aria, Michelle)
-- Plays audio directly without saving files
+- Multiple voice options
+- Direct audio playback
 
 ### `gpt_handler.py`
-Handles communication with OpenAI/DeepSeek API:
-- Sends user prompts to AI model
-- Manages conversation context
-- Returns AI-generated responses
+OpenAI/DeepSeek API integration:
+- **Redirect URL support**: Use custom endpoints/proxies
+- **Environment variable configuration**: Secure API key management
+- Conversation context management
+- Temperature and model selection
 
 ### `json_handle.py`
-Manages settings and chat history:
+Settings and chat history management:
 - Loads configuration from `settings.json`
-- Saves and manages chat history with automatic pruning
-- Provides universal functions for reading/writing settings
+- Chat history with automatic pruning
+- Universal settings read/write functions
 
 ### `txt_handle.py`
-Text file utilities for reading text files safely.
+Text file utilities for safe file reading.
 
-## Configuration
+### `personality.txt`
+AI personality configuration file that defines how Serina responds.
 
-Serina uses a `settings.json` file for easy configuration. Edit this file to customize your experience:
+## ⚙️ Configuration
+
+### Environment Variables (.env)
+```bash
+gpt_api_key=your_openai_api_key_here
+gpt_redirect_url=https://your-custom-endpoint.com/v1  # Optional for proxies
+```
+
+### Settings Configuration
+Serina uses a `settings.json` file for configuration:
 
 ```json
 {
@@ -123,6 +191,37 @@ Serina uses a `settings.json` file for easy configuration. Edit this file to cus
 }
 ```
 
+### Pre-recorded Audio Setup ⭐ **NEW**
+Create instant responses using pre-recorded audio:
+
+1. **Create voice folders**:
+   ```bash
+   mkdir -p pre-recorded-audio/nova
+   mkdir -p pre-recorded-audio/alloy
+   # Add folders for other voices as needed
+   ```
+
+2. **Generate audio files using speaker_api.py**:
+   ```bash
+   python speaker_api.py
+   # Choose option 4: "Save text to MP3 file"
+   ```
+
+3. **Example folder structure**:
+   ```
+   pre-recorded-audio/
+   ├── nova/
+   │   ├── yes.mp3
+   │   ├── hello.mp3
+   │   ├── listening.mp3
+   │   └── whats_up.mp3
+   └── alloy/
+       ├── greeting.mp3
+       └── response.mp3
+   ```
+
+4. **Automatic usage**: Serina will randomly select from available audio files in the `voice_to_use` folder (default: "nova")
+
 ### Settings Explained
 
 - **`serina_language`**: Speech recognition language
@@ -130,11 +229,10 @@ Serina uses a `settings.json` file for easy configuration. Edit this file to cus
   - `"zh"` - Chinese only  
   - `"auto"` - Auto-detect language
   
-- **`serina_voice_model`**: Text-to-speech voice
+- **`serina_voice_model`**: Legacy Edge TTS voice (when using speaker.py)
   - `"en-US-AriaNeural"` - Female English (default)
   - `"en-US-JennyNeural"` - Female English (alternative)
-  - `"en-US-MichelleNeural"` - Female English (alternative)
-  - `"zh-CN-XiaoxiaoNeural"` - Female Chinese
+  - Note: When using speaker_api.py, voice is controlled by `voice_to_use` variable in main.py
   
 - **`microphone_threshold`**: Microphone sensitivity (20-100)
   - Lower values = more sensitive
@@ -144,75 +242,22 @@ Serina uses a `settings.json` file for easy configuration. Edit this file to cus
   - Lower values = faster response
   - Higher values = more patient listening
 
-## Debug
+## 🎵 TTS Voice Options (OpenAI)
 
-### Microphone Threshold Issues
+When using `speaker_api.py` (default), you have access to these OpenAI voices:
 
-The `microphone_threshold` setting in `settings.json` controls how sensitive the microphone is to sound:
+| Voice | Description | Best For |
+|-------|-------------|----------|
+| **nova** | Bright, energetic (default) | General conversation |
+| **alloy** | Neutral, balanced | Professional responses |
+| **echo** | Clear, articulate | Clear communication |
+| **fable** | Warm, engaging | Storytelling |
+| **onyx** | Deep, authoritative | Serious topics |
+| **shimmer** | Soft, gentle | Calming responses |
 
-**Problem: Serina keeps saying "Serena not detected. Listening for voice..." repeatedly**
-- **Solution**: Turn UP the `microphone_threshold` value in `settings.json`
-- Try increasing from 80 to 100, 120, or higher
-- This makes the microphone less sensitive to background noise
+**To change voice**: Edit the `voice_to_use` variable in `main.py`
 
-**Problem: Console doesn't show anything after you speak (no response within 2 seconds)**
-- **Solution**: Turn DOWN the `microphone_threshold` value in `settings.json`
-- Try decreasing from 80 to 60, 40, or lower  
-- This makes the microphone more sensitive to your voice
-
-**Example adjustments in `settings.json`:**
-```json
-{
-  "microphone_threshold": 40,    // More sensitive (use if not detecting voice)
-  "microphone_threshold": 120    // Less sensitive (use if too much background noise)
-}
-```
-
-### Testing Your Settings
-
-1. Edit `settings.json` and save the file
-2. Restart the program: `python main.py`
-3. Say "Serena" and observe the console output
-4. Adjust the threshold based on the behavior described above
-
-### Wake Word Detection Issues
-
-**Current Limitation**: The wake word detection is not very reliable due to short timeout periods and sensitivity issues.
-
-**Workaround**: **Say "Serena" twice** for better detection:
-- First "Serena" - gets the system's attention
-- Second "Serena" - usually gets detected and activates the assistant
-
-**Why this happens**:
-- Wake word detection uses a 1-second timeout for quick response
-- Short timeout makes it miss longer or slower speech
-- Background noise can interfere with detection
-
-**Potential Improvements** (for developers):
-
-1. **Increase wake word timeout**:
-   ```python
-   # In recorder.py, listen_for_serena() function
-   text = voice_to_string(selected_language="en", recognizer=recognizer, timeout=3)  # Increase from 1 to 3
-   ```
-
-2. **Add multiple wake word variations**:
-   ```python
-   # Check for multiple variations
-   wake_words = ['serena', 'sarina', 'serina', 'sirena']
-   if text and any(word in text.lower() for word in wake_words):
-   ```
-
-3. **Implement continuous listening with voice activity detection**:
-   - Use a more sophisticated voice activity detection system
-   - Implement rolling buffer for continuous audio processing
-   - Add confidence scoring for wake word detection
-
-4. **Use dedicated wake word detection library**:
-   - Consider libraries like `porcupine` or `snowboy` for better wake word detection
-   - These are specifically designed for wake word detection vs general speech recognition
-
-## Troubleshooting
+## 🔧 Troubleshooting
 
 ### Common Issues
 
@@ -228,40 +273,69 @@ The `microphone_threshold` setting in `settings.json` controls how sensitive the
 
 3. **API Key errors**
    - Ensure `.env` file exists with correct API key
-   - Check that variable names match: `GPT_API_KEY` and `GPT_REDIRECT_URL`
+   - Check variable names: `gpt_api_key` and `gpt_redirect_url`
    - Verify `dotenv.load_dotenv()` is called
 
-4. **Pygame messages**
-   - These are suppressed by setting `PYGAME_HIDE_SUPPORT_PROMPT=1`
+4. **Pre-recorded audio not playing**
+   - Check that `pre-recorded-audio/nova/` folder exists
+   - Ensure audio files (.mp3, .wav, .ogg, .m4a) are present
+   - Verify `voice_to_use` variable matches folder name
+
+5. **Console output messy**
+   - The new professional interface should be clean
+   - If seeing pygame messages, check that suppression is working in speaker_api.py
 
 ### Dependencies
 
 If you encounter import errors, install missing packages:
 ```bash
-pip install speech_recognition
-pip install openai
-pip install python-dotenv
-pip install edge-tts
-pip install pygame
-pip install httpx
+pip install speech_recognition openai python-dotenv pygame httpx edge-tts
 ```
 
-Or simply use:
+Or use the requirements file:
 ```bash
 pip install -r requirements.txt
 ```
 
-## Security Note
+## 🎛️ Additional Features
+
+### Custom API Endpoints
+Use custom OpenAI-compatible endpoints by setting `gpt_redirect_url` in your `.env` file:
+```bash
+gpt_redirect_url=https://api.deepseek.com/v1
+```
+
+### MP3 Export Workflow
+1. Run `python speaker_api.py`
+2. Choose option 4: "Save text to MP3 file"
+3. Enter text, voice, and settings
+4. Files are automatically organized in `pre-recorded-audio/{voice}/`
+
+### Voice Testing
+Test different voices interactively:
+```bash
+python speaker_api.py
+# Choose option 1 or 2 to test voices
+```
+
+## 🔒 Security Note
 
 - **Never commit your `.env` file** - it contains sensitive API keys
 - The `.env` file is already in `.gitignore` to prevent accidental commits
 - Use `.env.example` as a template for setting up your environment
 - If you accidentally commit API keys, regenerate them immediately
 
-## Contributing
+## 🤝 Contributing
 
 Feel free to submit issues, feature requests, or pull requests to improve Serina!
 
-## License
+**Areas for contribution:**
+- Better wake word detection algorithms
+- Additional TTS voice providers
+- Mobile app version
+- GUI interface
+- Voice training capabilities
+
+## 📄 License
 
 This project is open source. Feel free to use and modify as needed.

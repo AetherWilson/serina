@@ -7,10 +7,14 @@ from json_handle import read_settings, write_chat_history, read_chat_history
 from txt_handle import read_txt_file
 import speech_recognition as sr
 import datetime
+import os
+import pygame
 
 # todo
 # make personalities for serina
 # make chat loggable
+
+voice_to_use = "nova"
 
 def print_header():
     """Print a clean header for the application."""
@@ -37,10 +41,32 @@ def print_status(message, status_type="info"):
     icon = icons.get(status_type, "ℹ️")
     print(f"[{timestamp}] {icon} {message}")
 
-def random_start_string():
-    """Generate a random start string for the conversation."""
-    responses = ["Yes?", "I'm here.", "What's up?", "I'm listening."]
-    return random.choice(responses)
+async def play_random_start_audio():
+    """Play a random pre-recorded start audio from the specified voice folder."""
+    # Build path to the voice folder
+    audio_folder = os.path.join("pre-recorded-audio", voice_to_use)
+    
+    # Get all audio files (.mp3, .wav, etc.) from the folder
+    audio_files = [f for f in os.listdir(audio_folder) 
+                  if f.lower().endswith(('.mp3', '.wav', '.ogg', '.m4a'))]
+    
+    # Select a random audio file
+    selected_file = random.choice(audio_files)
+    file_path = os.path.join(audio_folder, selected_file)
+    
+    print_status(f"Playing: {selected_file}", "speaking")
+    
+    # Initialize pygame mixer if not already done
+    if not pygame.mixer.get_init():
+        pygame.mixer.init()
+    
+    # Play the audio file
+    pygame.mixer.music.load(file_path)
+    pygame.mixer.music.play()
+    
+    # Wait for playback to complete
+    while pygame.mixer.music.get_busy():
+        await asyncio.sleep(0.1)  # Non-blocking wait
 
 async def main():
     # Print clean header
@@ -61,8 +87,8 @@ async def main():
         if serina_heard:
             print_status("Wake word detected! Responding...", "wake")
             
-            # Use OpenAI TTS with nova voice and tts-1 model
-            await play_tts_openai_async(random_start_string(), voice="nova", model="tts-1")
+            # Play pre-recorded start audio
+            await play_random_start_audio()
             
             print_status("Listening for user input...", "listening")
             recognized_text = record_voice_to_string()  # Uses optimized voice recording
@@ -70,8 +96,6 @@ async def main():
             if recognized_text:
                 print_status(f"User said: '{recognized_text}'", "success")
                 print_status("Processing with AI...", "processing")
-                
-                await play_tts_openai_async(f"I heard you said: {recognized_text}, let me think.", voice="nova", model="tts-1")
                 
                 chat_history = read_chat_history()
                 response = gpt_handler.completion_response(
@@ -90,13 +114,13 @@ async def main():
                 )
                 
                 print_status("Speaking response...", "speaking")
-                await play_tts_openai_async(response, voice="nova", model="tts-1", speed=0.9)
-                
+                await play_tts_openai_async(response, voice=voice_to_use, model="tts-1", speed=0.9, instructions="calm and soothing tone.")
+
                 print_status("Ready for next interaction", "info")
                 print("-" * 40)
             else:
                 print_status("Could not understand speech", "error")
-                await play_tts_openai_async("Please repeat, I didn't catch that.", voice="nova", model="tts-1")
+                await play_tts_openai_async("Please repeat, I didn't catch that.", voice=voice_to_use, model="tts-1")
 
 if __name__ == "__main__":
     try:
